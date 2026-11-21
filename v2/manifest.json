@@ -2,10 +2,11 @@
   "name": "Saunavire - Hikoilulaskuri",
   "short_name": "Saunavire",
   "description": "Seuraa saunasessioitasi ja optimoi hyvinvointisi. Arvioi hikoilu ja elektrolyyttimenetykset.",
-  "start_url": "/",
+  "start_url": "/v2/",
+  "scope": "/v2/",
   "display": "standalone",
-  "background_color": "#f5f0e8",
-  "theme_color": "#4a5e3b",
+  "background_color": "#faf8f4",
+  "theme_color": "#3a4d2f",
   "orientation": "portrait",
   "icons": [
     {

@@ -1,10 +1,11 @@
-const CACHE_NAME = 'saunavire-v1';
+const CACHE_NAME = 'saunavire-v2';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/v2/',
+  '/v2/index.html',
+  '/v2/manifest.json',
+  '/v2/icons/logo.png',
+  '/v2/icons/icon-192.png',
+  '/v2/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
