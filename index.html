@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Saunavire">
+<meta name="theme-color" content="#4a5e3b">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Saunavire - Hikoilulaskuri</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --green:#4a5e3b;--green-light:#6b7f5a;--bg:#f5f0e8;--card:#fff;
+  --text:#2d2d2d;--text-muted:#6b6b6b;--border:#e0ddd5;--radius:16px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;padding:16px 16px 100px;-webkit-font-smoothing:antialiased}
+h1{font-size:1.1rem;font-weight:600;margin-bottom:4px}
+h2{font-size:1rem;font-weight:600;margin-bottom:12px}
+
+.logo{text-align:center;margin:8px 0 16px}
+.logo img{height:60px}
+.logo-text{font-family:Georgia,serif;font-size:1.6rem;color:var(--green);letter-spacing:2px;font-weight:400}
+.logo-sub{font-size:0.7rem;color:var(--green-light);letter-spacing:1px;text-transform:uppercase}
+.tagline{text-align:center;color:var(--text-muted);font-size:0.85rem;margin-bottom:20px}
+
+.card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.card-dark{background:var(--green);color:#fff;border-radius:var(--radius) var(--radius) 0 0;padding:20px;margin-bottom:0}
+.card-dark+.card{border-radius:0 0 var(--radius) var(--radius);margin-top:0}
+.card-dark h2{color:#fff;margin-bottom:4px}
+.card-dark p{color:rgba(255,255,255,0.8);font-size:0.8rem}
+
+.param{margin-bottom:20px}
+.param-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.param-label{font-size:0.9rem;display:flex;align-items:center;gap:6px}
+.param-label .icon{font-size:1.1rem}
+.param-value{font-size:1.5rem;font-weight:700;color:var(--green)}
+.param-value span{font-size:0.85rem;font-weight:400;color:var(--text-muted)}
+
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:linear-gradient(to right,var(--green) 0%,var(--green) var(--pct,50%),var(--border) var(--pct,50%),var(--border) 100%);border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--green);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.15)}
+.range-labels{display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);margin-top:4px}
+
+.date-input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-size:0.9rem;background:var(--card);color:var(--text)}
+.comment-input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;font-size:0.9rem;min-height:80px;resize:vertical;font-family:inherit;background:var(--card);color:var(--text)}
+
+.summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.summary-row:last-child{border-bottom:none}
+
+.results-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.results-header h2{margin-bottom:0}
+.results-note{font-size:0.75rem;color:var(--text-muted);margin-bottom:16px;line-height:1.4}
+
+.sweat-box{background:var(--bg);border-radius:12px;padding:16px;text-align:center;margin-bottom:16px}
+.sweat-label{font-size:0.85rem;color:var(--text-muted)}
+.sweat-value{font-size:2.2rem;font-weight:700;color:var(--green)}
+.sweat-unit{font-size:1rem;font-weight:400;color:var(--text-muted)}
+
+.electrolyte-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg);border-radius:10px;margin-bottom:6px}
+.electrolyte-name{font-size:0.85rem}
+.electrolyte-val{font-weight:600;font-size:0.95rem}
+
+.dose-box{text-align:center;padding:16px}
+.dose-label{font-size:0.95rem;font-weight:600;margin-bottom:4px}
+.dose-value{font-size:2.5rem;font-weight:700;color:var(--green)}
+.dose-unit{font-size:1rem;color:var(--text-muted)}
+.dose-detail{font-size:0.75rem;color:var(--text-muted);margin-top:8px;line-height:1.4}
+
+.btn{width:100%;padding:16px;border:none;border-radius:var(--radius);font-size:1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:active{background:var(--green-light)}
+.btn-outline{background:transparent;color:var(--green);border:2px solid var(--green);margin-top:8px}
+.btn-danger{background:#dc3545;color:#fff;font-size:0.85rem;padding:12px;margin-top:24px}
+
+.nav{display:flex;gap:8px;margin-bottom:16px}
+.nav-btn{flex:1;padding:10px;border:2px solid var(--green);border-radius:12px;background:transparent;color:var(--green);font-size:0.85rem;font-weight:600;cursor:pointer;text-align:center}
+.nav-btn.active{background:var(--green);color:#fff}
+
+.history-item{padding:14px 0;border-bottom:1px solid var(--border)}
+.history-item:last-child{border-bottom:none}
+.history-date{font-weight:600;font-size:0.9rem}
+.history-stats{font-size:0.8rem;color:var(--text-muted);margin-top:4px}
+.history-comment{font-size:0.8rem;color:var(--text-muted);font-style:italic;margin-top:4px}
+.history-delete{background:none;border:none;color:#dc3545;font-size:0.8rem;cursor:pointer;padding:4px 0;margin-top:4px}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty-state .icon{font-size:2rem;margin-bottom:8px}
+
+.install-banner{background:var(--green);color:#fff;border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center;display:none}
+.install-banner p{font-size:0.85rem;margin-bottom:10px}
+.install-banner .btn{background:rgba(255,255,255,0.2);color:#fff;padding:10px}
+
+.info-box{background:var(--bg);border-radius:12px;padding:14px;margin-top:12px}
+.info-box h3{font-size:0.85rem;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.info-box p{font-size:0.8rem;color:var(--text-muted);line-height:1.4}
+
+.hidden{display:none}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;padding:12px 24px;border-radius:12px;font-size:0.85rem;z-index:100;opacity:0;transition:opacity 0.3s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <div class="logo-text">SAUNAVIRE</div>
+  <div class="logo-sub">Nesteytysjauhe saunojille</div>
+  <div class="logo-sub" style="margin-top:2px">Palauttaa mitä hiki vie!</div>
+</div>
+<p class="tagline">Seuraa saunasessioitasi ja optimoi hyvinvointisi</p>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showView('tracker')">🧖 Laskuri</button>
+  <button class="nav-btn" onclick="showView('history')">📊 Historia</button>
+</div>
+
+<div id="install-banner" class="install-banner">
+  <p>📲 Lisää Saunavire kotinäytölle!</p>
+  <button class="btn" onclick="installPWA()">Asenna sovellus</button>
+</div>
+
+<!-- TRACKER VIEW -->
+<div id="view-tracker">
+  <div class="card-dark">
+    <h2>Saunasession asetukset</h2>
+    <p>Aseta saunaparametrit laskeaksesi hikoilun ja elektrolyyttimenetykset</p>
+  </div>
+  <div class="card">
+    <div class="param">
+      <div class="param-header">
+        <span class="param-label"><span class="icon">⏱</span> Saunomisaika</span>
+        <span class="param-value"><span id="duration-val">30</span> <span>min</span></span>
+      </div>
+      <input type="range" id="duration" min="1" max="120" value="30" oninput="updateCalc()">
+      <div class="range-labels"><span>1 min</span><span>120 min</span></div>
+    </div>
+
+    <div class="param">
+      <div class="param-header">
+        <span class="param-label"><span class="icon">🌡</span> Lämpötila</span>
+        <span class="param-value"><span id="temp-val">90</span> <span>°C</span></span>
+      </div>
+      <input type="range" id="temp" min="70" max="120" value="90" oninput="updateCalc()">
+      <div class="range-labels"><span>70°C</span><span>120°C</span></div>
+    </div>
+
+    <div class="param">
+      <div class="param-header">
+        <span class="param-label"><span class="icon">⚖️</span> Kehon paino</span>
+        <span class="param-value"><span id="weight-val">70</span> <span>kg</span></span>
+      </div>
+      <input type="range" id="weight" min="40" max="150" value="70" oninput="updateCalc()">
+      <div class="range-labels"><span>40 kg</span><span>150 kg</span></div>
+    </div>
+
+    <div class="param">
+      <div class="param-header">
+        <span class="param-label"><span class="icon">📅</span> Istunnon päivämäärä</span>
+      </div>
+      <input type="date" id="session-date" class="date-input">
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Voit kirjata myös aiempia saunaistuntoja</div>
+    </div>
+
+    <div class="param" style="margin-bottom:0">
+      <div class="param-header">
+        <span class="param-label"><span class="icon">💬</span> Kommentit</span>
+      </div>
+      <textarea id="comments" class="comment-input" placeholder="Esim. kotona, mökillä, tuntemukset..."></textarea>
+      <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Vapaaehtoinen kenttä muistiinpanoille</div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="card">
+    <h2>Istunnon yhteenveto</h2>
+    <div class="summary-row"><span>Päivämäärä:</span><span id="sum-date"></span></div>
+    <div class="summary-row"><span>Kesto:</span><span id="sum-duration"></span></div>
+    <div class="summary-row"><span>Lämpötila:</span><span id="sum-temp"></span></div>
+    <div class="summary-row"><span>Kehon paino:</span><span id="sum-weight"></span></div>
+  </div>
+
+  <!-- Results -->
+  <div class="card">
+    <div class="results-header"><span style="font-size:1.2rem">💧</span><h2>Tulokset</h2></div>
+    <p class="results-note">Laskelmat perustuvat tieteellisiin tutkimuksiin hikoilun ja elektrolyyttimenetysten arvioimiseksi saunomisen aikana.</p>
+
+    <div class="sweat-box">
+      <div class="sweat-label">Arvioitu hikoilu:</div>
+      <div><span class="sweat-value" id="sweat-val">0,35</span> <span class="sweat-unit">litraa</span></div>
+    </div>
+
+    <h2 style="font-size:0.9rem;margin-bottom:10px">Elektrolyyttimenetykset:</h2>
+    <div class="electrolyte-row"><span class="electrolyte-name">Natrium (Na)</span><span class="electrolyte-val" id="na-val">420 mg</span></div>
+    <div class="electrolyte-row"><span class="electrolyte-name">Kloridi (Cl)</span><span class="electrolyte-val" id="cl-val">350 mg</span></div>
+    <div class="electrolyte-row"><span class="electrolyte-name">Kalium (K)</span><span class="electrolyte-val" id="k-val">70 mg</span></div>
+    <div class="electrolyte-row"><span class="electrolyte-name">Magnesium (Mg)</span><span class="electrolyte-val" id="mg-val">7 mg</span></div>
+    <div class="electrolyte-row"><span class="electrolyte-name">Kalsium (Ca)</span><span class="electrolyte-val" id="ca-val">7 mg</span></div>
+
+    <div class="info-box">
+      <h3>ℹ️ Miksi elektrolyytit ovat tärkeitä?</h3>
+      <p>Elektrolyytit ovat kehon nesteytykselle, hermoimpulssien kululle ja lihasten toiminnalle välttämättömiä mineraaleja.</p>
+    </div>
+  </div>
+
+  <!-- Dose recommendation -->
+  <div class="card">
+    <div class="dose-box">
+      <div class="dose-label">Ehdotetut Saunavire-annokset</div>
+      <div class="dose-value" id="dose-val">1</div>
+      <div class="dose-unit">annos</div>
+      <div class="dose-detail">Yksi annos palauttaa: Na 351 mg, Cl 364 mg, K 101 mg, Mg 10 mg, Ca 6 mg</div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="saveSession()">💾 Tallenna istunto</button>
+</div>
+
+<!-- HISTORY VIEW -->
+<div id="view-history" class="hidden">
+  <div class="card">
+    <h2>📊 Saunahistoria</h2>
+    <div id="history-list">
+      <div class="empty-state">
+        <div class="icon">🧖</div>
+        <p>Ei vielä tallennettuja saunasessioita.<br>Aloita tallentamalla ensimmäinen istunto!</p>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-outline" onclick="showView('tracker')">← Takaisin laskuriin</button>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// --- Electrolyte concentrations per liter of sweat (mg/L) ---
+const ELECTROLYTES = {
+  na: 1200,  // Natrium
+  cl: 1000,  // Kloridi
+  k: 200,    // Kalium
+  mg: 20,    // Magnesium
+  ca: 20     // Kalsium
+};
+
+// Saunavire per dose (mg)
+const SAUNAVIRE_DOSE = { na: 351, cl: 364, k: 101, mg: 10, ca: 6 };
+
+// --- Sweat estimation ---
+function estimateSweat(durationMin, tempC, weightKg) {
+  // Base sweat rate: ~0.5 L/hour at 80°C for 70 kg person
+  // Temperature factor: increases ~2% per degree above 80°C
+  // Weight factor: linear scaling from 70 kg baseline
+  const baseRate = 0.5; // L/hour at 80°C, 70kg
+  const tempFactor = 1 + (tempC - 80) * 0.02;
+  const weightFactor = weightKg / 70;
+  const hours = durationMin / 60;
+  return Math.round(baseRate * tempFactor * weightFactor * hours * 100) / 100;
+}
+
+function formatNumber(n) {
+  return n.toFixed(2).replace('.', ',');
+}
+
+function updateSliderStyle(el) {
+  const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+  el.style.setProperty('--pct', pct + '%');
+}
+
+function updateCalc() {
+  const duration = parseInt(document.getElementById('duration').value);
+  const temp = parseInt(document.getElementById('temp').value);
+  const weight = parseInt(document.getElementById('weight').value);
+
+  document.getElementById('duration-val').textContent = duration;
+  document.getElementById('temp-val').textContent = temp;
+  document.getElementById('weight-val').textContent = weight;
+
+  // Update slider styles
+  document.querySelectorAll('input[type=range]').forEach(updateSliderStyle);
+
+  // Summary
+  const dateEl = document.getElementById('session-date');
+  const dateStr = dateEl.value ? new Date(dateEl.value).toLocaleDateString('fi-FI') : new Date().toLocaleDateString('fi-FI');
+  document.getElementById('sum-date').textContent = dateStr;
+  document.getElementById('sum-duration').textContent = duration + ' minuuttia';
+  document.getElementById('sum-temp').textContent = temp + '°C';
+  document.getElementById('sum-weight').textContent = weight + ' kg';
+
+  // Sweat calculation
+  const sweat = estimateSweat(duration, temp, weight);
+  document.getElementById('sweat-val').textContent = formatNumber(sweat);
+
+  // Electrolyte losses
+  document.getElementById('na-val').textContent = Math.round(sweat * ELECTROLYTES.na) + ' mg';
+  document.getElementById('cl-val').textContent = Math.round(sweat * ELECTROLYTES.cl) + ' mg';
+  document.getElementById('k-val').textContent = Math.round(sweat * ELECTROLYTES.k) + ' mg';
+  document.getElementById('mg-val').textContent = Math.round(sweat * ELECTROLYTES.mg) + ' mg';
+  document.getElementById('ca-val').textContent = Math.round(sweat * ELECTROLYTES.ca) + ' mg';
+
+  // Dose recommendation (based on sodium as primary)
+  const naLoss = sweat * ELECTROLYTES.na;
+  const doses = Math.max(1, Math.round(naLoss / SAUNAVIRE_DOSE.na));
+  document.getElementById('dose-val').textContent = doses;
+}
+
+// --- Views ---
+function showView(view) {
+  document.getElementById('view-tracker').classList.toggle('hidden', view !== 'tracker');
+  document.getElementById('view-history').classList.toggle('hidden', view !== 'history');
+  document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (i === 0 && view === 'tracker') || (i === 1 && view === 'history'));
+  });
+  if (view === 'history') renderHistory();
+}
+
+// --- Storage ---
+function getSessions() {
+  try { return JSON.parse(localStorage.getItem('saunavire_sessions') || '[]'); }
+  catch { return []; }
+}
+
+function saveSessions(sessions) {
+  localStorage.setItem('saunavire_sessions', JSON.stringify(sessions));
+}
+
+function saveSession() {
+  const duration = parseInt(document.getElementById('duration').value);
+  const temp = parseInt(document.getElementById('temp').value);
+  const weight = parseInt(document.getElementById('weight').value);
+  const dateEl = document.getElementById('session-date');
+  const comments = document.getElementById('comments').value.trim();
+  const sweat = estimateSweat(duration, temp, weight);
+
+  const session = {
+    id: Date.now(),
+    date: dateEl.value || new Date().toISOString().split('T')[0],
+    duration, temp, weight, sweat,
+    na: Math.round(sweat * ELECTROLYTES.na),
+    cl: Math.round(sweat * ELECTROLYTES.cl),
+    k: Math.round(sweat * ELECTROLYTES.k),
+    mg: Math.round(sweat * ELECTROLYTES.mg),
+    ca: Math.round(sweat * ELECTROLYTES.ca),
+    doses: Math.max(1, Math.round((sweat * ELECTROLYTES.na) / SAUNAVIRE_DOSE.na)),
+    comments
+  };
+
+  const sessions = getSessions();
+  sessions.unshift(session);
+  saveSessions(sessions);
+  document.getElementById('comments').value = '';
+  showToast('Istunto tallennettu! ✅');
+}
+
+function deleteSession(id) {
+  const sessions = getSessions().filter(s => s.id !== id);
+  saveSessions(sessions);
+  renderHistory();
+  showToast('Istunto poistettu');
+}
+
+function renderHistory() {
+  const sessions = getSessions();
+  const list = document.getElementById('history-list');
+
+  if (sessions.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">🧖</div><p>Ei vielä tallennettuja saunasessioita.<br>Aloita tallentamalla ensimmäinen istunto!</p></div>';
+    return;
+  }
+
+  list.innerHTML = sessions.map(s => `
+    <div class="history-item">
+      <div class="history-date">${new Date(s.date).toLocaleDateString('fi-FI', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</div>
+      <div class="history-stats">
+        ${s.duration} min · ${s.temp}°C · ${s.weight} kg · Hikoilu: ${s.sweat.toFixed(2).replace('.',',')} L · ${s.doses} annos(ta) Saunavireä
+      </div>
+      ${s.comments ? `<div class="history-comment">"${s.comments}"</div>` : ''}
+      <button class="history-delete" onclick="deleteSession(${s.id})">🗑 Poista</button>
+    </div>
+  `).join('');
+}
+
+// --- Toast ---
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// --- PWA Install ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('install-banner').style.display = 'block';
+});
+
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((result) => {
+      if (result.outcome === 'accepted') {
+        document.getElementById('install-banner').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').style.display = 'none';
+});
+
+// --- Init ---
+document.addEventListener('DOMContentLoaded', () => {
+  // Set today's date
+  document.getElementById('session-date').value = new Date().toISOString().split('T')[0];
+
+  // Load saved weight preference
+  const savedWeight = localStorage.getItem('saunavire_weight');
+  if (savedWeight) document.getElementById('weight').value = savedWeight;
+
+  // Update on date change
+  document.getElementById('session-date').addEventListener('change', updateCalc);
+
+  // Save weight preference on change
+  document.getElementById('weight').addEventListener('change', () => {
+    localStorage.setItem('saunavire_weight', document.getElementById('weight').value);
+  });
+
+  updateCalc();
+});
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+</body>
+</html>
