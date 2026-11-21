@@ -88,17 +88,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted)}
 .empty-state .icon{font-size:2rem;margin-bottom:8px}
 
-.install-banner{background:var(--green);color:#fff;border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center;display:none}
+.install-banner{background:var(--green);color:#fff;border-radius:var(--radius);padding:16px;margin-bottom:16px;text-align:center;display:none;position:relative}
 .install-banner p{font-size:0.85rem;margin-bottom:10px}
 .install-banner .btn{background:rgba(255,255,255,0.2);color:#fff;padding:10px}
-.install-banner .close-btn{position:absolute;top:8px;right:12px;background:none;border:none;color:rgba(255,255,255,0.7);font-size:1.2rem;cursor:pointer}
 
-.ios-install-banner{background:var(--green);color:#fff;border-radius:var(--radius);padding:16px 16px 16px;margin-bottom:16px;text-align:center;display:none;position:relative}
-.ios-install-banner p{font-size:0.85rem;margin-bottom:6px;line-height:1.5}
-.ios-install-banner .steps{font-size:0.8rem;text-align:left;margin:10px 0;line-height:1.8}
-.ios-install-banner .share-icon{display:inline-block;width:20px;height:20px;vertical-align:middle;margin:0 2px}
-.ios-install-banner .btn{background:rgba(255,255,255,0.2);color:#fff;padding:10px;margin-top:6px}
-.ios-install-banner .close-btn{position:absolute;top:8px;right:12px;background:none;border:none;color:rgba(255,255,255,0.7);font-size:1.2rem;cursor:pointer}
+.install-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px}
+.install-overlay .logo-text{font-family:Georgia,serif;font-size:2rem;color:var(--green);letter-spacing:2px;margin-bottom:4px}
+.install-overlay .logo-sub{font-size:0.75rem;color:var(--green-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}
+.install-overlay .install-card{background:var(--green);color:#fff;border-radius:var(--radius);padding:24px;width:100%;max-width:400px;text-align:center}
+.install-overlay .install-card h2{color:#fff;font-size:1.1rem;margin-bottom:12px}
+.install-overlay .install-card .steps{font-size:0.85rem;text-align:left;margin:16px 0;line-height:2}
+.install-overlay .install-card .share-icon{display:inline-block;width:20px;height:20px;vertical-align:middle;margin:0 2px}
+.install-overlay .btn-install{width:100%;padding:14px;border:none;border-radius:12px;font-size:0.95rem;font-weight:600;cursor:pointer;background:#fff;color:var(--green);margin-bottom:8px}
+.install-overlay .btn-continue{width:100%;padding:12px;border:none;border-radius:12px;font-size:0.85rem;cursor:pointer;background:transparent;color:rgba(255,255,255,0.7);text-decoration:underline}
 
 .info-box{background:var(--bg);border-radius:12px;padding:14px;margin-top:12px}
 .info-box h3{font-size:0.85rem;margin-bottom:6px;display:flex;align-items:center;gap:6px}
@@ -124,21 +126,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
   <button class="nav-btn" onclick="showView('history')">📊 Historia</button>
 </div>
 
-<div id="install-banner" class="install-banner">
-  <button class="close-btn" onclick="dismissInstall('android')">&times;</button>
-  <p>📲 Lisää Saunavire kotinäytölle!</p>
-  <button class="btn" onclick="installPWA()">Asenna sovellus</button>
-</div>
-
-<div id="ios-install-banner" class="ios-install-banner">
-  <button class="close-btn" onclick="dismissInstall('ios')">&times;</button>
-  <p>📲 Asenna Saunavire kotinäytölle</p>
-  <div class="steps">
-    1. Paina alhaalla <strong>jakopainiketta</strong> <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="4" y="8" width="16" height="14" rx="2"/><path d="M12 2v12M8 6l4-4 4 4"/></svg><br>
-    2. Valitse <strong>"Lisää Koti-valikkoon"</strong><br>
-    3. Paina <strong>"Lisää"</strong>
+<div id="install-overlay" class="install-overlay">
+  <div class="logo-text">SAUNAVIRE</div>
+  <div class="logo-sub">Hikoilulaskuri</div>
+  <div class="install-card">
+    <h2 id="install-title">📲 Asenna sovellus</h2>
+    <p id="install-desc" style="font-size:0.85rem;opacity:0.9;margin-bottom:12px">Saat parhaan kokemuksen asentamalla Saunaviren kotinäytölle</p>
+    <div id="install-steps" class="steps">
+      1. Paina alhaalla <strong>jakopainiketta</strong> <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="4" y="8" width="16" height="14" rx="2"/><path d="M12 2v12M8 6l4-4 4 4"/></svg><br>
+      2. Valitse <strong>"Lisää Koti-valikkoon"</strong><br>
+      3. Paina <strong>"Lisää"</strong>
+    </div>
+    <button id="install-action-btn" class="btn-install" onclick="installAction()">Asenna sovellus</button>
+    <button class="btn-continue" onclick="continueInBrowser()">Jatka selaimessa →</button>
   </div>
-  <button class="btn" onclick="copyURL()">📋 Kopioi linkki (avaa Safarissa)</button>
 </div>
 
 <!-- TRACKER VIEW -->
@@ -410,6 +411,7 @@ function showToast(msg) {
 
 // --- PWA Install ---
 let deferredPrompt;
+let installMode = null; // 'ios-safari', 'ios-other', 'android'
 
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -423,60 +425,75 @@ function isSafari() {
   return /Safari/.test(navigator.userAgent) && !/CriOS|FxiOS|OPiOS|EdgiOS|Chrome/.test(navigator.userAgent);
 }
 
-// Android / Chrome install
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (!localStorage.getItem('saunavire_install_dismissed_android')) {
-    document.getElementById('install-banner').style.display = 'block';
-  }
-});
+function showInstallOverlay() {
+  if (isInStandaloneMode() || localStorage.getItem('saunavire_install_dismissed')) return;
 
-function installPWA() {
-  if (deferredPrompt) {
+  const overlay = document.getElementById('install-overlay');
+  const steps = document.getElementById('install-steps');
+  const actionBtn = document.getElementById('install-action-btn');
+  const title = document.getElementById('install-title');
+  const desc = document.getElementById('install-desc');
+
+  if (isIOS() && isSafari()) {
+    installMode = 'ios-safari';
+    title.textContent = '📲 Asenna kotinäytölle';
+    desc.textContent = 'Saat sovelluksen omana kuvakkeena kotinäytölle';
+    steps.style.display = '';
+    actionBtn.style.display = 'none';
+  } else if (isIOS() && !isSafari()) {
+    installMode = 'ios-other';
+    title.textContent = '📲 Avaa Safarissa';
+    desc.textContent = 'Asennus onnistuu vain Safarin kautta — kopioi linkki ja avaa Safarissa';
+    steps.style.display = 'none';
+    actionBtn.textContent = '📋 Kopioi linkki';
+    actionBtn.style.display = '';
+  } else if (deferredPrompt) {
+    installMode = 'android';
+    title.textContent = '📲 Asenna sovellus';
+    desc.textContent = 'Saat parhaan kokemuksen asentamalla Saunaviren kotinäytölle';
+    steps.style.display = 'none';
+    actionBtn.textContent = 'Asenna sovellus';
+    actionBtn.style.display = '';
+  } else {
+    return; // Desktop or no install available
+  }
+
+  overlay.style.display = 'flex';
+}
+
+function installAction() {
+  if (installMode === 'android' && deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((result) => {
       if (result.outcome === 'accepted') {
-        document.getElementById('install-banner').style.display = 'none';
+        continueInBrowser();
       }
       deferredPrompt = null;
+    });
+  } else if (installMode === 'ios-other') {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      showToast('Linkki kopioitu! Avaa Safarissa 📋');
+    }).catch(() => {
+      showToast('Kopioi osoite: ' + window.location.href);
     });
   }
 }
 
-window.addEventListener('appinstalled', () => {
-  document.getElementById('install-banner').style.display = 'none';
+function continueInBrowser() {
+  localStorage.setItem('saunavire_install_dismissed', '1');
+  document.getElementById('install-overlay').style.display = 'none';
+}
+
+// Android / Chrome install prompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallOverlay();
 });
 
-// iOS install banner
-function showIOSInstall() {
-  if (isIOS() && !isInStandaloneMode() && !localStorage.getItem('saunavire_install_dismissed_ios')) {
-    const banner = document.getElementById('ios-install-banner');
-    if (!isSafari()) {
-      // Not Safari — show "copy link, open in Safari" message
-      banner.querySelector('p').textContent = '📲 Avaa Safarissa asentaaksesi sovelluksen';
-      banner.querySelector('.steps').style.display = 'none';
-      banner.querySelector('.btn').style.display = '';
-    } else {
-      // Safari — show Add to Home Screen instructions
-      banner.querySelector('.btn').style.display = 'none';
-    }
-    banner.style.display = 'block';
-  }
-}
-
-function copyURL() {
-  navigator.clipboard.writeText(window.location.href).then(() => {
-    showToast('Linkki kopioitu! Avaa Safarissa 📋');
-  }).catch(() => {
-    showToast('Kopioi osoite: ' + window.location.href);
-  });
-}
-
-function dismissInstall(type) {
-  localStorage.setItem('saunavire_install_dismissed_' + type, '1');
-  document.getElementById(type === 'ios' ? 'ios-install-banner' : 'install-banner').style.display = 'none';
-}
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-overlay').style.display = 'none';
+});
 
 // --- Init ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -496,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   updateCalc();
-  showIOSInstall();
+  showInstallOverlay();
 });
 
 // Register service worker
