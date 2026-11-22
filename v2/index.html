@@ -290,14 +290,17 @@ textarea.form-input{min-height:72px;resize:vertical}
 .summary-stat .s-value{font-size:1.3rem;font-weight:700;margin-top:2px}
 .summary-electrolytes{margin-top:16px}
 .summary-electrolytes h3{font-size:0.9rem;font-weight:600;opacity:0.85;margin-bottom:10px}
-.summary-elec-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.summary-elec-item{
-  background:rgba(255,255,255,0.1);border-radius:var(--radius-sm);padding:10px 12px;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.summary-elec-item.wide{grid-column:1/-1}
-.summary-elec-item .se-name{font-size:0.85rem;opacity:0.8}
-.summary-elec-item .se-val{font-size:1rem;font-weight:700}
+.summary-elec-table{border-radius:var(--radius-sm);overflow:hidden;border:1px solid rgba(255,255,255,0.15)}
+.se-header,.se-row{display:grid;grid-template-columns:50px 1fr 1fr;align-items:center;padding:6px 10px}
+.se-header{font-size:0.7rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.5px}
+.se-h{text-align:right}
+.se-row{border-top:1px solid rgba(255,255,255,0.1)}
+.se-row:nth-child(odd){background:rgba(255,255,255,0.06)}
+.se-name{font-size:0.85rem;font-weight:700}
+.se-lost{font-size:0.85rem;text-align:right;color:#ff9e9e}
+.se-repl{font-size:0.85rem;font-weight:700;text-align:right}
+.se-ok{color:#a8e6a3}
+.se-warn{color:#ffc078}
 
 /* Transitions */
 .view{animation:fadeIn 0.25s ease}
@@ -532,15 +535,17 @@ textarea.form-input{min-height:72px;resize:vertical}
       <div class="summary-stat"><div class="s-label" data-i18n="sum_sessions">Sessiot</div><div class="s-value" id="sum-sessions">0</div></div>
       <div class="summary-stat"><div class="s-label" data-i18n="sum_time">Aika</div><div class="s-value" id="sum-time">0 h</div></div>
       <div class="summary-stat"><div class="s-label" data-i18n="sum_sweat">Hikoilu</div><div class="s-value" id="sum-sweat">0 L</div></div>
+      <div class="summary-stat"><div class="s-label" data-i18n="sum_drinks">Juotu</div><div class="s-value" id="sum-drinks">0 dl</div></div>
     </div>
     <div class="summary-electrolytes">
-      <h3 data-i18n="elec_losses_total">Elektrolyyttimenetykset yhteensä</h3>
-      <div class="summary-elec-grid">
-        <div class="summary-elec-item"><span class="se-name">Na</span><span class="se-val" id="sum-na">0 mg</span></div>
-        <div class="summary-elec-item"><span class="se-name">Cl</span><span class="se-val" id="sum-cl">0 mg</span></div>
-        <div class="summary-elec-item"><span class="se-name">K</span><span class="se-val" id="sum-k">0 mg</span></div>
-        <div class="summary-elec-item"><span class="se-name">Mg</span><span class="se-val" id="sum-mg2">0 mg</span></div>
-        <div class="summary-elec-item"><span class="se-name">Ca</span><span class="se-val" id="sum-ca2">0 mg</span></div>
+      <h3 data-i18n="elec_losses_total">Elektrolyytit yhteensä</h3>
+      <div class="summary-elec-table">
+        <div class="se-header"><span></span><span class="se-h" data-i18n="elec_lost_col">Menetys</span><span class="se-h" data-i18n="elec_replaced_col">Korvattu</span></div>
+        <div class="se-row"><span class="se-name">Na⁺</span><span class="se-lost" id="sum-na">0</span><span class="se-repl" id="sum-rna">0</span></div>
+        <div class="se-row"><span class="se-name">Cl⁻</span><span class="se-lost" id="sum-cl">0</span><span class="se-repl" id="sum-rcl">0</span></div>
+        <div class="se-row"><span class="se-name">K⁺</span><span class="se-lost" id="sum-k">0</span><span class="se-repl" id="sum-rk">0</span></div>
+        <div class="se-row"><span class="se-name">Mg²⁺</span><span class="se-lost" id="sum-mg2">0</span><span class="se-repl" id="sum-rmg">0</span></div>
+        <div class="se-row"><span class="se-name">Ca²⁺</span><span class="se-lost" id="sum-ca2">0</span><span class="se-repl" id="sum-rca">0</span></div>
       </div>
     </div>
   </div>
@@ -615,12 +620,12 @@ const T = {
     replaced_total: 'Korvattu yhteensä',
     save_btn: 'Tallenna istunto',
     summary_title_text: 'Yhteensä',
-    sum_sessions: 'Sessiot', sum_time: 'Aika', sum_sweat: 'Hikoilu',
-    elec_losses_total: 'Elektrolyyttimenetykset yhteensä',
+    sum_sessions: 'Sessiot', sum_time: 'Aika', sum_sweat: 'Hikoilu', sum_drinks: 'Juotu',
+    elec_losses_total: 'Elektrolyytit yhteensä', elec_lost_col: 'Menetys', elec_replaced_col: 'Korvattu',
     history_title_text: 'Saunahistoria',
     empty_state: 'Ei vielä tallennettuja sessioita.<br>Tallenna ensimmäinen saunakertasi!',
     toast_saved: 'Istunto tallennettu ✓', toast_deleted: 'Poistettu',
-    history_sweat: 'Hikoilu', history_doses: 'annos(ta) Saunavireä',
+    history_sweat: 'Hikoilu', history_doses: 'annos(ta) Saunavirettä',
     history_drunk: 'Juotu', history_delete: 'Poista',
     water_hint_prefix: 'Juo vähintään ', water_hint_suffix: ' dl nestettä saunomisen jälkeen (sis. elektrolyytit)',
     water_hint_default: 'Muista juoda riittävästi nestettä saunomisen jälkeen',
@@ -661,8 +666,8 @@ const T = {
     replaced_total: 'Ersatt totalt',
     save_btn: 'Spara session',
     summary_title_text: 'Totalt',
-    sum_sessions: 'Sessioner', sum_time: 'Tid', sum_sweat: 'Svettning',
-    elec_losses_total: 'Totala elektrolytförluster',
+    sum_sessions: 'Sessioner', sum_time: 'Tid', sum_sweat: 'Svettning', sum_drinks: 'Druckit',
+    elec_losses_total: 'Elektrolyter totalt', elec_lost_col: 'Förlust', elec_replaced_col: 'Ersatt',
     history_title_text: 'Bastuhistorik',
     empty_state: 'Inga sparade bastusessioner ännu.<br>Börja med att spara din första session!',
     toast_saved: 'Session sparad! ✓', toast_deleted: 'Raderad',
@@ -707,8 +712,8 @@ const T = {
     replaced_total: 'Total replaced',
     save_btn: 'Save session',
     summary_title_text: 'Total',
-    sum_sessions: 'Sessions', sum_time: 'Time', sum_sweat: 'Sweating',
-    elec_losses_total: 'Total electrolyte losses',
+    sum_sessions: 'Sessions', sum_time: 'Time', sum_sweat: 'Sweating', sum_drinks: 'Consumed',
+    elec_losses_total: 'Electrolytes total', elec_lost_col: 'Lost', elec_replaced_col: 'Replaced',
     history_title_text: 'Sauna history',
     empty_state: 'No saved sauna sessions yet.<br>Start by saving your first session!',
     toast_saved: 'Session saved! ✓', toast_deleted: 'Deleted',
@@ -1012,15 +1017,23 @@ function renderHistory() {
 
   // Summary card
   summaryEl.classList.remove('hidden');
-  let totalTime = 0, totalSweat = 0, totalNa = 0, totalCl = 0, totalK = 0, totalMg = 0, totalCa = 0;
+  let totalTime = 0, totalSweat = 0, totalDrinksDl = 0;
+  let totalNa = 0, totalCl = 0, totalK = 0, totalMg = 0, totalCa = 0;
+  let totalRNa = 0, totalRCl = 0, totalRK = 0, totalRMg = 0, totalRCa = 0;
   sessions.forEach(s => {
     totalTime += s.duration || 0;
     totalSweat += s.sweat || 0;
+    totalDrinksDl += s.totalDrinksDl || 0;
     totalNa += s.na || Math.round((s.sweat || 0) * ELECTROLYTES.na);
     totalCl += s.cl || Math.round((s.sweat || 0) * ELECTROLYTES.cl);
     totalK += s.k || Math.round((s.sweat || 0) * ELECTROLYTES.k);
     totalMg += s.mg || Math.round((s.sweat || 0) * ELECTROLYTES.mg);
     totalCa += s.ca || Math.round((s.sweat || 0) * ELECTROLYTES.ca);
+    totalRNa += Math.round(s.replacedNa || (s.replaceDoses||0) * SAUNAVIRE_DOSE.na + (s.altNa||0));
+    totalRCl += Math.round(s.replacedCl || (s.replaceDoses||0) * SAUNAVIRE_DOSE.cl + (s.altCl||0));
+    totalRK += Math.round(s.replacedK || (s.replaceDoses||0) * SAUNAVIRE_DOSE.k + (s.altK||0));
+    totalRMg += Math.round(s.replacedMg || (s.replaceDoses||0) * SAUNAVIRE_DOSE.mg + (s.altMg||0));
+    totalRCa += Math.round(s.replacedCa || (s.replaceDoses||0) * SAUNAVIRE_DOSE.ca + (s.altCa||0));
   });
 
   const dates = sessions.map(s => s.date).sort();
@@ -1034,11 +1047,23 @@ function renderHistory() {
   const mins = totalTime % 60;
   document.getElementById('sum-time').textContent = hours > 0 ? hours + ' h ' + mins + ' min' : totalTime + ' min';
   document.getElementById('sum-sweat').textContent = totalSweat.toFixed(1).replace('.', ',') + ' L';
+  document.getElementById('sum-drinks').textContent = totalDrinksDl + ' dl';
   document.getElementById('sum-na').textContent = totalNa + ' mg';
   document.getElementById('sum-cl').textContent = totalCl + ' mg';
   document.getElementById('sum-k').textContent = totalK + ' mg';
   document.getElementById('sum-mg2').textContent = totalMg + ' mg';
   document.getElementById('sum-ca2').textContent = totalCa + ' mg';
+  const rc = (r, l) => r >= l ? 'se-ok' : 'se-warn';
+  document.getElementById('sum-rna').textContent = totalRNa + ' mg';
+  document.getElementById('sum-rna').className = 'se-repl ' + rc(totalRNa, totalNa);
+  document.getElementById('sum-rcl').textContent = totalRCl + ' mg';
+  document.getElementById('sum-rcl').className = 'se-repl ' + rc(totalRCl, totalCl);
+  document.getElementById('sum-rk').textContent = totalRK + ' mg';
+  document.getElementById('sum-rk').className = 'se-repl ' + rc(totalRK, totalK);
+  document.getElementById('sum-rmg').textContent = totalRMg + ' mg';
+  document.getElementById('sum-rmg').className = 'se-repl ' + rc(totalRMg, totalMg);
+  document.getElementById('sum-rca').textContent = totalRCa + ' mg';
+  document.getElementById('sum-rca').className = 'se-repl ' + rc(totalRCa, totalCa);
 
   const histLoc = currentLang === 'en' ? 'en-GB' : currentLang === 'sv' ? 'sv-SE' : 'fi-FI';
   list.innerHTML = sessions.map(s => {
