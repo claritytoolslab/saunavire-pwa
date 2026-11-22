@@ -561,8 +561,12 @@ function removeDrink(btn) {
   const list = document.getElementById('drinks-list');
   if (list.children.length > 1) {
     btn.closest('.drink-row').remove();
-    updateDrinks();
+  } else {
+    const row = btn.closest('.drink-row');
+    row.querySelector('select').selectedIndex = 0;
+    row.querySelector('.drink-amount').value = 0;
   }
+  updateDrinks();
 }
 
 function getDrinksData() {
