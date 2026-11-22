@@ -197,7 +197,8 @@ textarea.form-input{min-height:72px;resize:vertical}
   background:var(--bg);z-index:200;display:none;
   flex-direction:column;align-items:center;justify-content:center;padding:32px;
 }
-.install-overlay img{max-width:180px;margin-bottom:28px}
+.install-overlay img{max-width:180px;margin-bottom:12px}
+.install-overlay .lang-btn{color:var(--text-tertiary);border-color:var(--border)}
 .install-card{
   background:var(--green);color:#fff;border-radius:var(--radius);
   padding:28px;width:100%;max-width:400px;text-align:center;
@@ -322,6 +323,11 @@ textarea.form-input{min-height:72px;resize:vertical}
 <!-- Install overlay -->
 <div id="install-overlay" class="install-overlay">
   <img src="icons/logo-new.svg" alt="Saunavire">
+  <div class="lang-picker" style="margin-bottom:16px">
+    <button class="lang-btn active" onclick="setLang('fi')">FI</button>
+    <button class="lang-btn" onclick="setLang('sv')">SV</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
   <div class="install-card">
     <h2 id="install-title" data-i18n="install_title">Asenna sovellus</h2>
     <p class="desc" id="install-desc" data-i18n="install_desc">Saat parhaan kokemuksen asentamalla Saunaviren kotinäytölle</p>
