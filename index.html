@@ -147,6 +147,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 .replaced-tile .r-value{font-size:1.1rem;font-weight:700;color:var(--green);margin-top:2px}
 .replaced-pct{font-size:0.7rem;font-weight:500;color:var(--green-light)}
 
+/* Drinks section */
+.drinks-section{margin-top:0;margin-bottom:12px}
+.drinks-section h3{font-size:0.9rem;font-weight:600;margin-bottom:8px}
+.drink-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.drink-row select{flex:1;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:0.85rem;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b6b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.drink-amount{width:70px;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:0.85rem;text-align:center;background:var(--card);color:var(--text);font-family:inherit}
+.drink-unit{font-size:0.8rem;color:var(--text-muted);min-width:16px}
+.drink-delete{width:32px;height:32px;border:none;background:none;color:#dc3545;font-size:1rem;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;border-radius:8px}
+.drink-delete:active{background:rgba(220,53,69,0.1)}
+.add-drink-btn{display:flex;align-items:center;gap:6px;background:none;border:2px dashed var(--border);border-radius:10px;padding:10px;width:100%;color:var(--green);font-size:0.85rem;font-weight:600;cursor:pointer;justify-content:center}
+.add-drink-btn:active{background:var(--bg)}
+.drinks-total{font-size:0.85rem;color:var(--green);font-weight:600;margin-top:8px;text-align:right}
+
 /* History summary */
 .summary-card{
   background:linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
@@ -307,8 +320,31 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
       </div>
     </div>
 
-    <div class="water-hint">Muista juoda vettä 3–5 dl saunomisen jälkeen</div>
-    <div class="source-ref">Elektrolyyttien viitearvot: THL / Fineli</div>
+    <div class="water-hint" id="water-hint">Muista juoda vettä 3–5 dl saunomisen jälkeen</div>
+    <div class="source-ref">Nesteen korvaus: 125–150 % hikoilusta (ACSM / Maughan et al.) · Elektrolyytit: THL / Fineli</div>
+
+    <div class="drinks-section">
+      <h3>🥤 Nautitut juomat</h3>
+      <div id="drinks-list">
+        <div class="drink-row" data-idx="0">
+          <select onchange="updateDrinks()">
+            <option value="vesi">Vesi</option>
+            <option value="kivennasvesi">Kivennäisvesi</option>
+            <option value="vesijohtovesi">Vesijohtovesi</option>
+            <option value="virvoitusjuoma">Virvoitusjuoma</option>
+            <option value="virvoitusjuoma-light">Virvoitusjuoma light</option>
+            <option value="olut-00">Olut, alkoholiton 0,0%</option>
+            <option value="olut-45">Olut, keskiolut 4,5 til%</option>
+            <option value="lonkero">Long drink 5,5 til%</option>
+          </select>
+          <input type="number" class="drink-amount" value="3" min="0" max="50" step="1" onchange="updateDrinks()" oninput="updateDrinks()">
+          <span class="drink-unit">dl</span>
+          <button class="drink-delete" onclick="removeDrink(this)" title="Poista">✕</button>
+        </div>
+      </div>
+      <button class="add-drink-btn" onclick="addDrink()">+ Lisää juoma</button>
+      <div class="drinks-total" id="drinks-total">Yhteensä: 3 dl</div>
+    </div>
 
     <div class="alt-section">
       <h3>Vaihtoehtoinen elektrolyyttien lähde</h3>
@@ -446,6 +482,7 @@ function updateCalc() {
   // Sync replace dose counter
   document.getElementById('replace-doses').textContent = doses;
   updateReplace();
+  updateWaterHint();
 }
 
 // Dose counter for replace section
@@ -492,6 +529,75 @@ function updateReplace() {
   });
 }
 
+// --- Drinks ---
+const DRINK_OPTIONS = [
+  {value:'vesi', label:'Vesi'},
+  {value:'kivennasvesi', label:'Kivennäisvesi'},
+  {value:'vesijohtovesi', label:'Vesijohtovesi'},
+  {value:'virvoitusjuoma', label:'Virvoitusjuoma'},
+  {value:'virvoitusjuoma-light', label:'Virvoitusjuoma light'},
+  {value:'olut-00', label:'Olut, alkoholiton 0,0%'},
+  {value:'olut-45', label:'Olut, keskiolut 4,5 til%'},
+  {value:'lonkero', label:'Long drink 5,5 til%'}
+];
+
+function addDrink() {
+  const list = document.getElementById('drinks-list');
+  const row = document.createElement('div');
+  row.className = 'drink-row';
+  row.innerHTML = `
+    <select onchange="updateDrinks()">
+      ${DRINK_OPTIONS.map(d => `<option value="${d.value}">${d.label}</option>`).join('')}
+    </select>
+    <input type="number" class="drink-amount" value="3" min="0" max="50" step="1" onchange="updateDrinks()" oninput="updateDrinks()">
+    <span class="drink-unit">dl</span>
+    <button class="drink-delete" onclick="removeDrink(this)" title="Poista">✕</button>
+  `;
+  list.appendChild(row);
+  updateDrinks();
+}
+
+function removeDrink(btn) {
+  const list = document.getElementById('drinks-list');
+  if (list.children.length > 1) {
+    btn.closest('.drink-row').remove();
+    updateDrinks();
+  }
+}
+
+function getDrinksData() {
+  const rows = document.querySelectorAll('#drinks-list .drink-row');
+  return Array.from(rows).map(row => ({
+    type: row.querySelector('select').value,
+    amount: parseFloat(row.querySelector('.drink-amount').value) || 0
+  }));
+}
+
+function getTotalDrinksDl() {
+  return getDrinksData().reduce((sum, d) => sum + d.amount, 0);
+}
+
+function updateDrinks() {
+  const total = getTotalDrinksDl();
+  document.getElementById('drinks-total').textContent = 'Yhteensä: ' + total + ' dl';
+}
+
+function updateWaterHint() {
+  const duration = parseInt(document.getElementById('duration').value);
+  const temp = parseInt(document.getElementById('temp').value);
+  const weight = parseInt(document.getElementById('weight').value);
+  const sweat = estimateSweat(duration, temp, weight);
+  // 125–150% of sweat lost (ACSM guideline)
+  const minDl = Math.round(sweat * 1.25 * 10);
+  const maxDl = Math.round(sweat * 1.5 * 10);
+  const hint = document.getElementById('water-hint');
+  if (minDl > 0) {
+    hint.textContent = `Juo vähintään ${minDl}–${maxDl} dl nestettä saunomisen jälkeen (sis. elektrolyytit)`;
+  } else {
+    hint.textContent = 'Muista juoda riittävästi nestettä saunomisen jälkeen';
+  }
+}
+
 // --- Views ---
 function showView(view) {
   document.getElementById('view-tracker').classList.toggle('hidden', view !== 'tracker');
@@ -521,6 +627,8 @@ function saveSession() {
   const sweat = estimateSweat(duration, temp, weight);
   const replaceDoses = parseInt(document.getElementById('replace-doses').textContent) || 0;
 
+  const drinks = getDrinksData();
+
   const session = {
     id: Date.now(),
     date: dateEl.value || new Date().toISOString().split('T')[0],
@@ -532,6 +640,8 @@ function saveSession() {
     ca: Math.round(sweat * ELECTROLYTES.ca),
     doses: Math.max(1, Math.round((sweat * ELECTROLYTES.na) / SAUNAVIRE_DOSE.na)),
     replaceDoses,
+    drinks,
+    totalDrinksDl: getTotalDrinksDl(),
     altNa: parseFloat(document.getElementById('alt-na').value) || 0,
     altCl: parseFloat(document.getElementById('alt-cl').value) || 0,
     altK: parseFloat(document.getElementById('alt-k').value) || 0,
@@ -599,7 +709,7 @@ function renderHistory() {
     <div class="history-item">
       <div class="history-date">${new Date(s.date).toLocaleDateString('fi-FI', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</div>
       <div class="history-stats">
-        ${s.duration} min · ${s.temp}°C · ${s.weight} kg · Hikoilu: ${s.sweat.toFixed(2).replace('.',',')} L · ${s.doses} annos(ta) Saunavireä
+        ${s.duration} min · ${s.temp}°C · ${s.weight} kg · Hikoilu: ${s.sweat.toFixed(2).replace('.',',')} L · ${s.doses} annos(ta) Saunavireä${s.totalDrinksDl ? ' · Juotu: ' + s.totalDrinksDl + ' dl' : ''}
       </div>
       ${s.comments ? `<div class="history-comment">"${s.comments}"</div>` : ''}
       <button class="history-delete" onclick="deleteSession(${s.id})">🗑 Poista</button>
