@@ -317,6 +317,7 @@ textarea.form-input{min-height:72px;resize:vertical}
     <button class="lang-btn active" onclick="setLang('fi')">FI</button>
     <button class="lang-btn" onclick="setLang('sv')">SV</button>
     <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ja')">JA</button>
   </div>
 </header>
 
@@ -327,6 +328,7 @@ textarea.form-input{min-height:72px;resize:vertical}
     <button class="lang-btn active" onclick="setLang('fi')">FI</button>
     <button class="lang-btn" onclick="setLang('sv')">SV</button>
     <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ja')">JA</button>
   </div>
   <div class="install-card">
     <h2 id="install-title" data-i18n="install_title">Asenna sovellus</h2>
@@ -731,6 +733,52 @@ const T = {
     drink_virvoitusjuoma: 'Soft drink', drink_virvoitusjuoma_light: 'Diet soft drink',
     drink_olut_00: 'Beer, non-alcoholic 0.0%', drink_olut_45: 'Beer, lager 4.5 ABV%',
     drink_lonkero: 'Long drink 5.5 ABV%'
+  },
+  ja: {
+    nav_tracker_text: '計算', nav_history_text: '履歴',
+    install_title: 'アプリをインストール',
+    install_desc: 'Saunavireをホーム画面に追加して最高の体験を',
+    install_steps: '1. 下の<strong>共有ボタン</strong>をタップ <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="4" y="8" width="16" height="14" rx="2"/><path d="M12 2v12M8 6l4-4 4 4"/></svg><br>2. <strong>「ホーム画面に追加」</strong>を選択<br>3. <strong>「追加」</strong>をタップ',
+    install_btn: 'アプリをインストール', install_continue: 'ブラウザで続ける',
+    settings_title: 'サウナセッション設定',
+    settings_desc: 'サウナのパラメーターを設定して発汗量と電解質損失を計算',
+    param_duration: 'サウナ時間', param_temp: '温度',
+    param_weight: '体重', param_date: '日付',
+    param_comments: 'メモ',
+    comments_placeholder: '例: 自宅、コテージ、感想...',
+    comments_hint: '任意',
+    results_title: '結果',
+    results_note: '計算はサウナ入浴中の発汗と電解質損失を推定する科学的研究に基づいています。',
+    sweat_label: '推定発汗量',
+    elec_na: 'ナトリウム (Na)', elec_cl: '塩化物 (Cl)', elec_k: 'カリウム (K)',
+    elec_mg: 'マグネシウム (Mg)', elec_ca: 'カルシウム (Ca)',
+    dose_label: 'Saunavire 1回分',
+    dose_unit_plural: '回分',
+    dose_detail: '1回分の補給量: Na 351 mg · Cl 364 mg · K 101 mg · Mg 10 mg · Ca 6 mg',
+    replace_title: '水分と電解質を補給',
+    dose_counter_label: 'Saunavire 回数',
+    source_ref: '水分補給: 発汗量の125–150% (ACSM / Maughan et al.) · 電解質: THL / Fineli',
+    drinks_title: '🥤 摂取した飲料',
+    add_drink: '+ 飲料を追加',
+    drinks_total_prefix: '合計: ',
+    alt_source_title: '代替電解質源',
+    alt_source_desc: '他の製品を使用する場合、値を手動で入力してください',
+    replaced_total: '補給合計',
+    save_btn: 'セッションを保存',
+    summary_title_text: '合計',
+    sum_sessions: 'セッション', sum_time: '時間', sum_sweat: '発汗', sum_drinks: '摂取量',
+    elec_losses_total: '電解質合計', elec_lost_col: '損失', elec_replaced_col: '補給',
+    history_title_text: 'サウナ履歴',
+    empty_state: '保存されたサウナセッションはまだありません。<br>最初のセッションを保存しましょう！',
+    toast_saved: 'セッション保存済み ✓', toast_deleted: '削除済み',
+    history_sweat: '発汗', history_doses: '回分 Saunavire',
+    history_drunk: '摂取量', history_delete: '削除',
+    water_hint_prefix: 'サウナ後に最低 ', water_hint_suffix: ' dl の水分を摂取してください（電解質を含む）',
+    water_hint_default: 'サウナ後に3〜5 dlの水分を摂取することをお忘れなく',
+    drink_vesi: '水', drink_kivennasvesi: 'ミネラルウォーター', drink_vesijohtovesi: '水道水',
+    drink_virvoitusjuoma: '清涼飲料水', drink_virvoitusjuoma_light: 'ダイエット清涼飲料水',
+    drink_olut_00: 'ノンアルコールビール 0.0%', drink_olut_45: 'ビール 4.5%',
+    drink_lonkero: 'ロングドリンク 5.5%'
   }
 };
 
