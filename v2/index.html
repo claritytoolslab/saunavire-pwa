@@ -1091,7 +1091,7 @@ function renderHistory() {
   });
 
   const dates = sessions.map(s => s.date).sort();
-  const dateLoc = currentLang === 'en' ? 'en-GB' : currentLang === 'sv' ? 'sv-SE' : 'fi-FI';
+  const dateLoc = currentLang === 'en' ? 'en-GB' : currentLang === 'sv' ? 'sv-SE' : currentLang === 'ja' ? 'ja-JP' : 'fi-FI';
   const first = new Date(dates[0]).toLocaleDateString(dateLoc, {day:'numeric', month:'short'});
   const last = new Date(dates[dates.length - 1]).toLocaleDateString(dateLoc, {day:'numeric', month:'short', year:'numeric'});
   document.getElementById('summary-dates').textContent = first + ' – ' + last;
@@ -1119,7 +1119,7 @@ function renderHistory() {
   document.getElementById('sum-rca').textContent = totalRCa + ' mg';
   document.getElementById('sum-rca').className = 'se-repl ' + rc(totalRCa, totalCa);
 
-  const histLoc = currentLang === 'en' ? 'en-GB' : currentLang === 'sv' ? 'sv-SE' : 'fi-FI';
+  const histLoc = currentLang === 'en' ? 'en-GB' : currentLang === 'sv' ? 'sv-SE' : currentLang === 'ja' ? 'ja-JP' : 'fi-FI';
   list.innerHTML = sessions.map(s => {
     const rNa = Math.round(s.replacedNa || (s.replaceDoses||0) * SAUNAVIRE_DOSE.na + (s.altNa||0));
     const rCl = Math.round(s.replacedCl || (s.replaceDoses||0) * SAUNAVIRE_DOSE.cl + (s.altCl||0));
